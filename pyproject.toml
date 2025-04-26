@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "optcg-tools"
+version = "0.1.0"
+description = "Tools to extract information from the One Piece TCG site."
+authors = ["Jerry Quintero"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+beautifulsoup4 = "^4.13.4"
+lxml = "^5.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

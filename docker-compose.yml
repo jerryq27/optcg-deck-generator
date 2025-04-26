@@ -1,0 +1,10 @@
+services:
+  optcg-tools:
+    container_name: project_optcg-tools
+    image: env_lowleveldev
+    pull_policy: missing
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/home/lowleveldev/app/
+
