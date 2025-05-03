@@ -4,6 +4,11 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 
+def main():
+    card_sets = get_card_sets()
+    show_ui(card_sets)
+
+
 def get_card_sets():
     CARD_LIST_URL = "https://en.onepiece-cardgame.com/cardlist/?series=569001"
     response = httpx.get(CARD_LIST_URL)
@@ -45,19 +50,37 @@ def get_card_set_images(card_set):
     set_dir_name = match.group() if match else card_set["name"]
 
     print(f"Cards: {len(image_urls)}")
-    print(f"Creating directory '{set_dir_name}'")
 
     set_dir = Path(set_dir_name)
+    if not set_dir.exists():
+        print(f"Creating directory '{set_dir_name}'")
     set_dir.mkdir(exist_ok=True)
 
+    images = []
     for image_url in image_urls:
-        response = httpx.get(image_url)
-
         last_slash_i = image_url.rfind("/")
         image_name = image_url[last_slash_i + 1:]
 
-        with open(set_dir / image_name, "wb") as image_file:
-            image_file.write(response.content)
+        image_path = set_dir / image_name
+        if image_path.exists():
+            print(f"Skipping '{image_path.name}' already exists.")
+            continue
+
+        try:
+            print(f"Downloading '{image_path.name}'... ", end='')
+            response = httpx.get(image_url)
+            print("Done.")
+            with open(image_path, "wb") as image_file:
+                print(f"Creating '{image_path.name}'... ", end='')
+                image_file.write(response.content)
+                print("Done.")
+        except Error as e:
+            print(f"Error downloading file: {e}")
+    return images
+
+
+def create_card_deck_image(images):
+    pass
 
 
 def show_ui(card_sets):
@@ -79,9 +102,10 @@ def show_ui(card_sets):
     finally:
         if has_error:
             exit()
-    get_card_set_images(card_set)
+    images = get_card_set_images(card_set)
+    create_card_deck_image(images)
 
 
-card_sets = get_card_sets()
-show_ui(card_sets)
+if __name__ == "__main__":
+    main()
 
