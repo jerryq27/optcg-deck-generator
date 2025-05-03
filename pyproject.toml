@@ -11,6 +11,7 @@ beautifulsoup4 = "^4.13.4"
 lxml = "^5.4.0"
 httpx = "^0.28.1"
 selenium = "^4.31.0"
+pillow = "^11.2.1"
 
 
 [build-system]
