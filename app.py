@@ -1,4 +1,6 @@
+import re
 import httpx
+from pathlib import Path
 from bs4 import BeautifulSoup
 
 
@@ -24,7 +26,6 @@ def get_card_sets():
 
 
 def get_card_set_images(card_set):
-
     BASE_URL = "https://en.onepiece-cardgame.com"
     DECK_URL = f"https://en.onepiece-cardgame.com/cardlist/?series={card_set['id']}"
 
@@ -34,10 +35,29 @@ def get_card_set_images(card_set):
 
     image_urls = [img["data-src"][2:] for img in images]
 
-    for image_url in image_urls:
-        print("/".join([BASE_URL, image_url]))
+    for i, image_url in enumerate(image_urls):
+        question_mark_i = image_url.find("?")
+        image_urls[i] = f"{BASE_URL}/{image_url[:question_mark_i]}"
+        print(image_urls[i])
+
+    pattern = re.compile(r"\[.+\]")
+    match = pattern.search(card_set["name"])
+    set_dir_name = match.group() if match else card_set["name"]
 
     print(f"Cards: {len(image_urls)}")
+    print(f"Creating directory '{set_dir_name}'")
+
+    set_dir = Path(set_dir_name)
+    set_dir.mkdir(exist_ok=True)
+
+    for image_url in image_urls:
+        response = httpx.get(image_url)
+
+        last_slash_i = image_url.rfind("/")
+        image_name = image_url[last_slash_i + 1:]
+
+        with open(set_dir / image_name, "wb") as image_file:
+            image_file.write(response.content)
 
 
 def show_ui(card_sets):
