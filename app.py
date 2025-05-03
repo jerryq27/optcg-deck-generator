@@ -1,5 +1,6 @@
 import re
 import httpx
+from PIL import Image, ImageColor
 from pathlib import Path
 from bs4 import BeautifulSoup
 
@@ -43,13 +44,13 @@ def get_card_set_images(card_set):
     for i, image_url in enumerate(image_urls):
         question_mark_i = image_url.find("?")
         image_urls[i] = f"{BASE_URL}/{image_url[:question_mark_i]}"
-        print(image_urls[i])
+        print(f"Found image {i+1}: {image_urls[i]}")
 
     pattern = re.compile(r"\[.+\]")
     match = pattern.search(card_set["name"])
     set_dir_name = match.group() if match else card_set["name"]
 
-    print(f"Cards: {len(image_urls)}")
+    print(f"Total cards: {len(image_urls)}")
 
     set_dir = Path(set_dir_name)
     if not set_dir.exists():
@@ -62,16 +63,17 @@ def get_card_set_images(card_set):
         image_name = image_url[last_slash_i + 1:]
 
         image_path = set_dir / image_name
+        images.append(image_path)
         if image_path.exists():
-            print(f"Skipping '{image_path.name}' already exists.")
+            print(f"Skipping download of '{image_path.name}' already exists.")
             continue
 
         try:
-            print(f"Downloading '{image_path.name}'... ", end='')
+            print(f"Downloading '{image_path.name}'... ", end="")
             response = httpx.get(image_url)
             print("Done.")
             with open(image_path, "wb") as image_file:
-                print(f"Creating '{image_path.name}'... ", end='')
+                print(f"Creating '{image_path.name}'... ", end="")
                 image_file.write(response.content)
                 print("Done.")
         except Error as e:
@@ -79,8 +81,32 @@ def get_card_set_images(card_set):
     return images
 
 
-def create_card_deck_image(images):
-    pass
+def create_card_deck_image(image_paths):
+    print("Creating deck image.. ")
+    example_image = Image.open(image_paths[0])
+
+    IMAGE_COUNT = len([f for f in image_paths[0].parent.iterdir()])
+    IMAGE_WIDTH = example_image.width * 10
+    IMAGE_HEIGHT = example_image.height * (int(IMAGE_COUNT / 10) + 1)
+    deck_image = Image.new("RGBA", (IMAGE_WIDTH, IMAGE_HEIGHT), "#00000000")
+
+    col_offset = 0
+    row_offset = 0
+    for image_path in image_paths:
+        image = Image.open(image_path)
+
+        col = image.width * col_offset
+        row = image.height * row_offset
+        deck_image.paste(image, (col, row))
+
+        if col_offset != 0 and col_offset % 10 == 0:
+            col_offset = 0
+            row_offset += 1
+        else:
+            col_offset += 1
+
+    deck_image.save(image_paths[0].parent / "deck.png")
+    print("Finished creating deck.")
 
 
 def show_ui(card_sets):
