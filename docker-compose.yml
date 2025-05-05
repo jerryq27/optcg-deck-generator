@@ -1,12 +1,15 @@
 services:
   optcg-tools:
     container_name: project_optcg-tools
-    image: env_lowleveldev
+    image: env_generaldev:latest
     pull_policy: missing
     stdin_open: true
     tty: true
     volumes:
-      - ./:/home/lowleveldev/app/
-      - dependencies:/home/lowleveldev/.cache
+      - ./:/home/generaldev/app/
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - dependencies:/home/generaldev/.cache
+    environment:
+      - DISPLAY=${DISPLAY}
 volumes:
   dependencies: {}
