@@ -3,9 +3,18 @@ import httpx
 from PIL import Image, ImageColor
 from pathlib import Path
 from bs4 import BeautifulSoup
-
+from PyQt6.QtWidgets import QApplication
+from gui.main import MainWindow
 
 def main():
+    # Can pass sys.argv if gui program accepts CLI arguments.
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec()
+
+    exit()
+
     card_sets = get_card_sets()
     show_ui(card_sets)
 
