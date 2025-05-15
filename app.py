@@ -4,7 +4,8 @@ from PIL import Image, ImageColor
 from pathlib import Path
 from bs4 import BeautifulSoup
 from PyQt6.QtWidgets import QApplication
-from gui.main import MainWindow
+from gui import MainWindow
+
 
 def main():
     # Can pass sys.argv if gui program accepts CLI arguments.
