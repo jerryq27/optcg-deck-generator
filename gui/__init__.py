@@ -42,20 +42,12 @@ class MainWindow(QMainWindow):
     def create_left_side_layout(self):
         left_side_layout = QVBoxLayout()
 
-        base_path = Path().parent
-        don_path = base_path / "res" / "don-cards" / "1.png"
-
-        card_set_cards = []
-        for i in range(54):
-            card_set_cards.append(Card(don_path))
-
+        card_set_cards = self.get_test_cards(54)
         card_set_label = QLabel("Card Set")
         card_set_scroll_area = CardGridArea(card_set_cards)
 
-        deck_cards = []
-        for i in range(12):
-            deck_cards.append(Card(don_path))
 
+        deck_cards = self.get_test_cards(12)
         deck_label = QLabel("Deck")
         deck_scroll_area = CardGridArea(deck_cards)
 
@@ -88,7 +80,7 @@ class MainWindow(QMainWindow):
         cbtn_don = CardButton("Select DON", don_path)
         cbtn_card_back = CardButton("Select Card Back", card_back_path)
 
-        test_card = Card(leader_path)
+        test_card = Card(leader_path, (0,0))
 
         card_buttons_layout.addWidget(cbtn_leader)
         card_buttons_layout.addWidget(cbtn_don)
@@ -106,3 +98,21 @@ class MainWindow(QMainWindow):
         right_side_layout.addLayout(button_layout, 3,0)
         return right_side_layout
 
+
+    def get_test_cards(self, number_of_cards):
+        base_path = Path().parent
+        don_path = base_path / "res" / "don-cards" / "1.png"
+        cards = []
+
+        COLUMN_LIMIT = 5
+        grid_row = 0
+        grid_col = 0
+        for i in range(number_of_cards):
+            coords = (grid_row, grid_col)
+            cards.append(Card(don_path, coords))
+            grid_col += 1
+            if grid_col == COLUMN_LIMIT:
+                grid_row += 1
+                grid_col = 0
+
+        return cards

@@ -39,29 +39,43 @@ class CardButton(QPushButton):
         self.setIconSize(scaled_image_pixmap.size())
 
 
-class Card(QFrame):
+class Card(QPushButton):
 
-    def __init__(self, image_path):
+    def __init__(self, image_path, coords):
         super().__init__()
+        self.row, self.col = coords
 
-        self.layout = QVBoxLayout(self)
-        image = QLabel()
         image_pixmap = QPixmap(str(image_path))
         if image_pixmap.isNull():
-            image.setText("Error loading image.")
             print(f"Error loading the image: {image_path}, {image_path.exists()}")
 
-        image_pixmap = image_pixmap.scaled(
+        scaled_image_pixmap = image_pixmap.scaled(
             IMAGE_BUTTON_WIDTH,
             IMAGE_BUTTON_HEIGHT,
             aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio
         )
-        image.setPixmap(image_pixmap)
-        # image.setScaledContents(True)
+        icon_image = QIcon(scaled_image_pixmap)
 
-        self.setFrameShape(QFrame.Shape.Box)
-        self.setLineWidth(1)
-        self.layout.addWidget(image)
+        self.setIcon(icon_image)
+        self.setIconSize(scaled_image_pixmap.size())
+        self.setCheckable(True)
+        self.clicked.connect(self.action_click)
+
+    def action_click(self):
+        if self.isChecked():
+            self.setStyleSheet(
+                "QPushButton {"
+                "  background-color: lightblue;"
+                "}"
+            )
+            print(f"Selected card at ({self.row}, {self.col})")
+        else:
+            self.setStyleSheet(
+                "QPushButton {"
+                "  background-color: none;"
+                "}"
+            )
+            print(f"Deselected card at ({self.row}, {self.col})")
 
 
 class CardGridArea(QScrollArea):
@@ -72,15 +86,9 @@ class CardGridArea(QScrollArea):
         card_set_layout = QGridLayout()
         card_set.setLayout(card_set_layout)
 
-        COLUMN_LIMIT = 5
-        grid_row = 0
-        grid_col = 0
         for i in range(len(cards)):
-            card_set_layout.addWidget(cards[i], grid_row, grid_col)
-            grid_col += 1
-            if grid_col == COLUMN_LIMIT:
-                grid_row += 1
-                grid_col = 0
+            card = cards[i]
+            card_set_layout.addWidget(card, card.row, card.col)
 
         self.setWidget(card_set)
 
