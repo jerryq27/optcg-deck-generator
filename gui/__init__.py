@@ -15,6 +15,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 from .Widgets import (
+    Card,
+    CardGridArea,
     CardButton,
     TestBox,
 )
@@ -40,11 +42,22 @@ class MainWindow(QMainWindow):
     def create_left_side_layout(self):
         left_side_layout = QVBoxLayout()
 
+        base_path = Path().parent
+        don_path = base_path / "res" / "don-cards" / "1.png"
+
+        card_set_cards = []
+        for i in range(54):
+            card_set_cards.append(Card(don_path))
+
         card_set_label = QLabel("Card Set")
-        card_set_scroll_area = QScrollArea()
+        card_set_scroll_area = CardGridArea(card_set_cards)
+
+        deck_cards = []
+        for i in range(12):
+            deck_cards.append(Card(don_path))
 
         deck_label = QLabel("Deck")
-        deck_scroll_area = QScrollArea()
+        deck_scroll_area = CardGridArea(deck_cards)
 
         left_side_layout.addWidget(card_set_label)
         left_side_layout.addWidget(card_set_scroll_area)
@@ -75,9 +88,12 @@ class MainWindow(QMainWindow):
         cbtn_don = CardButton("Select DON", don_path)
         cbtn_card_back = CardButton("Select Card Back", card_back_path)
 
+        test_card = Card(leader_path)
+
         card_buttons_layout.addWidget(cbtn_leader)
         card_buttons_layout.addWidget(cbtn_don)
         card_buttons_layout.addWidget(cbtn_card_back)
+        # card_buttons_layout.addWidget(test_card)
 
         btn_clear_deck = QPushButton("Clear Deck")
         btn_gen_deck_img = QPushButton("Generate Deck Image")
