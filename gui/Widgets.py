@@ -14,12 +14,46 @@ from PyQt6.QtGui import (
     QPixmap,
 )
 
+"""
+Widgets:
+    Card - Basic QFrame that displays a card and no interactive signals
+    CardDropDown - Drop Down to select a card (Leader, DON, CardBack)
+    CardGridArea - Scroll area with a grid layout for a list of cards
+    CardGridButton - Card button component to use in a grid layout
+    Test - Basic frame with border
+"""
 
 # Scaled sizes to maintain aspect ratio
 IMAGE_BUTTON_WIDTH = 69
 IMAGE_BUTTON_HEIGHT = 97
 
-class CardButton(QPushButton):
+
+class Card(QFrame):
+
+    def __init__(self, image_path):
+        super().__init__()
+
+        self.layout = QVBoxLayout(self)
+        image = QLabel()
+        image_pixmap = QPixmap(str(image_path))
+        if image_pixmap.isNull():
+            image.setText("Error loading image.")
+            print(f"Error loading the image: {image_path}, {image_path.exists()}")
+
+        image_pixmap = image_pixmap.scaled(
+            IMAGE_BUTTON_WIDTH,
+            IMAGE_BUTTON_HEIGHT,
+            aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio
+        )
+        image.setPixmap(image_pixmap)
+        # image.setScaledContents(True)
+
+        self.setFrameShape(QFrame.Shape.Box)
+        self.setLineWidth(1)
+        self.layout.addWidget(image)
+
+
+class CardDropDown(QPushButton):
 
     def __init__(self, label, image_path):
         super().__init__(f"\n{label}")
@@ -39,7 +73,22 @@ class CardButton(QPushButton):
         self.setIconSize(scaled_image_pixmap.size())
 
 
-class Card(QPushButton):
+class CardGridArea(QScrollArea):
+
+    def __init__(self, cards):
+        super().__init__()
+        card_set = QWidget()
+        card_set_layout = QGridLayout()
+        card_set.setLayout(card_set_layout)
+
+        for i in range(len(cards)):
+            card = cards[i]
+            card_set_layout.addWidget(card, card.row, card.col)
+
+        self.setWidget(card_set)
+
+
+class CardGridButton(QPushButton):
 
     def __init__(self, image_path, coords):
         super().__init__()
@@ -76,21 +125,6 @@ class Card(QPushButton):
                 "}"
             )
             print(f"Deselected card at ({self.row}, {self.col})")
-
-
-class CardGridArea(QScrollArea):
-
-    def __init__(self, cards):
-        super().__init__()
-        card_set = QWidget()
-        card_set_layout = QGridLayout()
-        card_set.setLayout(card_set_layout)
-
-        for i in range(len(cards)):
-            card = cards[i]
-            card_set_layout.addWidget(card, card.row, card.col)
-
-        self.setWidget(card_set)
 
 
 class TestBox(QFrame):

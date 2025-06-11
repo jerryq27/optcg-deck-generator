@@ -16,8 +16,9 @@ from PyQt6.QtWidgets import (
 )
 from .Widgets import (
     Card,
+    CardDropDown,
     CardGridArea,
-    CardButton,
+    CardGridButton,
     TestBox,
 )
 from pathlib import Path
@@ -76,11 +77,11 @@ class MainWindow(QMainWindow):
         don_path = base_path / "res" / "don-cards" / "1.png"
         card_back_path = base_path / "[ST-01]" / "ST01-003.png"
 
-        cbtn_leader = CardButton("Select Leader", leader_path)
-        cbtn_don = CardButton("Select DON", don_path)
-        cbtn_card_back = CardButton("Select Card Back", card_back_path)
+        cbtn_leader = CardDropDown("Select Leader", leader_path)
+        cbtn_don = CardDropDown("Select DON", don_path)
+        cbtn_card_back = CardDropDown("Select Card Back", card_back_path)
 
-        test_card = Card(leader_path, (0,0))
+        test_card = Card(leader_path)
 
         card_buttons_layout.addWidget(cbtn_leader)
         card_buttons_layout.addWidget(cbtn_don)
@@ -109,7 +110,7 @@ class MainWindow(QMainWindow):
         grid_col = 0
         for i in range(number_of_cards):
             coords = (grid_row, grid_col)
-            cards.append(Card(don_path, coords))
+            cards.append(CardGridButton(don_path, coords))
             grid_col += 1
             if grid_col == COLUMN_LIMIT:
                 grid_row += 1
