@@ -31,12 +31,20 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("OPTCG Deck Builder")
         self.setFixedSize(QSize(1080, 720))
 
+        """ Layouts """
         main_layout = QHBoxLayout()
-        main_layout.addLayout(self.create_left_side_layout())
-        main_layout.addLayout(self.create_right_side_layout())
+        left_layout = self.create_left_side_layout()
+        right_layout = self.create_right_side_layout()
 
+        main_layout.addLayout(left_layout)
+        main_layout.addLayout(right_layout)
+
+        """ Widgets """
+        self.card_set_scroll_area = None
+        self.deck_scroll_area = None
         widget = QWidget()
         widget.setLayout(main_layout)
+
         self.setCentralWidget(widget)
 
 
@@ -45,17 +53,17 @@ class MainWindow(QMainWindow):
 
         card_set_cards = self.get_test_cards(54)
         card_set_label = QLabel("Card Set")
-        card_set_scroll_area = CardGridArea(card_set_cards)
+        self.card_set_scroll_area = CardGridArea(card_set_cards)
 
 
         deck_cards = self.get_test_cards(12)
         deck_label = QLabel("Deck")
-        deck_scroll_area = CardGridArea(deck_cards)
+        self.deck_scroll_area = CardGridArea(deck_cards)
 
         left_side_layout.addWidget(card_set_label)
         left_side_layout.addWidget(card_set_scroll_area)
         left_side_layout.addWidget(deck_label)
-        left_side_layout.addWidget(deck_scroll_area)
+        left_side_layout.addWidget(self.deck_scroll_area)
 
         return left_side_layout
 
@@ -89,6 +97,7 @@ class MainWindow(QMainWindow):
         # card_buttons_layout.addWidget(test_card)
 
         btn_clear_deck = QPushButton("Clear Deck")
+        btn_clear_deck.clicked.connect(lambda: self.deck_scroll_area.clear_area())
         btn_gen_deck_img = QPushButton("Generate Deck Image")
         button_layout.addWidget(btn_clear_deck)
         button_layout.addWidget(btn_gen_deck_img)

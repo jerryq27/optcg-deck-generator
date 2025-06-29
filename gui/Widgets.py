@@ -77,15 +77,30 @@ class CardGridArea(QScrollArea):
 
     def __init__(self, cards):
         super().__init__()
-        card_set = QWidget()
-        card_set_layout = QGridLayout()
-        card_set.setLayout(card_set_layout)
+        self.cards = cards
+        self.card_set = QWidget()
+        self.card_set_layout = QGridLayout()
+        self.card_set.setLayout(self.card_set_layout)
 
-        for i in range(len(cards)):
-            card = cards[i]
-            card_set_layout.addWidget(card, card.row, card.col)
+        for i in range(len(self.cards)):
+            card = self.cards[i]
+            self.card_set_layout.addWidget(card, card.row, card.col)
 
-        self.setWidget(card_set)
+        self.setWidget(self.card_set)
+
+    def add_card(self, card):
+        self.card_set_layout.addWidget(card)
+
+    def clear_area(self):
+        while self.card_set_layout.count():
+            card = self.card_set_layout.takeAt(0)
+
+            card_widget = card.widget() if card and card.widget() else None
+            if card_widget:
+                self.card_set_layout.removeWidget(card_widget)
+                card_widget.deleteLater()
+
+        self.cards = []
 
 
 class CardGridButton(QPushButton):
