@@ -78,13 +78,15 @@ class CardGridArea(QScrollArea):
     def __init__(self, cards=[]):
         super().__init__()
         self.cards = cards
+        self.card_buttons = []
         self.card_grid = QWidget()
         self.card_grid_layout = QGridLayout()
         self.card_grid.setLayout(self.card_grid_layout)
 
-        for i in range(len(self.cards)):
-            card = self.cards[i]
-            self.card_grid_layout.addWidget(card, card.row, card.col)
+        for card in self.cards:
+            card_button = CardGridButton(card)
+            self.card_grid_layout.addWidget(card_button, card.row, card.col)
+            self.card_buttons.append(card_button)
 
         self.setWidget(self.card_grid)
 
@@ -93,6 +95,7 @@ class CardGridButton(QPushButton):
 
     def __init__(self, card):
         super().__init__()
+        self.card = card
         self.row, self.col = card.coords
 
         image_pixmap = QPixmap(str(card.path))
