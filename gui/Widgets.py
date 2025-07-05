@@ -16,7 +16,7 @@ from PyQt6.QtGui import (
 
 """
 Widgets:
-    Card - Basic QFrame that displays a card and no interactive signals
+    CardFrame - Basic QFrame that displays a card and no interactive signals
     CardDropDown - Drop Down to select a card (Leader, DON, CardBack)
     CardGridArea - Scroll area with a grid layout for a list of cards
     CardGridButton - Card button component to use in a grid layout
@@ -28,7 +28,7 @@ IMAGE_BUTTON_WIDTH = 69
 IMAGE_BUTTON_HEIGHT = 97
 
 
-class Card(QFrame):
+class CardFrame(QFrame):
 
     def __init__(self, image_path):
         super().__init__()
@@ -75,41 +75,27 @@ class CardDropDown(QPushButton):
 
 class CardGridArea(QScrollArea):
 
-    def __init__(self, cards):
+    def __init__(self, cards=[]):
         super().__init__()
         self.cards = cards
-        self.card_set = QWidget()
-        self.card_set_layout = QGridLayout()
-        self.card_set.setLayout(self.card_set_layout)
+        self.card_grid = QWidget()
+        self.card_grid_layout = QGridLayout()
+        self.card_grid.setLayout(self.card_grid_layout)
 
         for i in range(len(self.cards)):
             card = self.cards[i]
-            self.card_set_layout.addWidget(card, card.row, card.col)
+            self.card_grid_layout.addWidget(card, card.row, card.col)
 
-        self.setWidget(self.card_set)
-
-    def add_card(self, card):
-        self.card_set_layout.addWidget(card)
-
-    def clear_area(self):
-        while self.card_set_layout.count():
-            card = self.card_set_layout.takeAt(0)
-
-            card_widget = card.widget() if card and card.widget() else None
-            if card_widget:
-                self.card_set_layout.removeWidget(card_widget)
-                card_widget.deleteLater()
-
-        self.cards = []
+        self.setWidget(self.card_grid)
 
 
 class CardGridButton(QPushButton):
 
-    def __init__(self, image_path, coords):
+    def __init__(self, card):
         super().__init__()
-        self.row, self.col = coords
+        self.row, self.col = card.coords
 
-        image_pixmap = QPixmap(str(image_path))
+        image_pixmap = QPixmap(str(card.path))
         if image_pixmap.isNull():
             print(f"Error loading the image: {image_path}, {image_path.exists()}")
 
