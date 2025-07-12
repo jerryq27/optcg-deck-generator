@@ -26,6 +26,7 @@ Widgets:
 # Scaled sizes to maintain aspect ratio
 IMAGE_BUTTON_WIDTH = 69
 IMAGE_BUTTON_HEIGHT = 97
+IMAGE_BUTTON_PADDING = 16
 
 
 class CardFrame(QFrame):
@@ -81,6 +82,7 @@ class CardGridArea(QScrollArea):
         self.card_buttons = []
         self.card_grid = QWidget()
         self.card_grid_layout = QGridLayout()
+
         self.card_grid.setLayout(self.card_grid_layout)
 
         for card in self.cards:
@@ -88,6 +90,7 @@ class CardGridArea(QScrollArea):
             self.card_grid_layout.addWidget(card_button, card.row, card.col)
             self.card_buttons.append(card_button)
 
+        self.setWidgetResizable(True)
         self.setWidget(self.card_grid)
 
 
@@ -111,6 +114,10 @@ class CardGridButton(QPushButton):
 
         self.setIcon(icon_image)
         self.setIconSize(scaled_image_pixmap.size())
+        self.setFixedSize(
+            IMAGE_BUTTON_WIDTH + IMAGE_BUTTON_PADDING,
+            IMAGE_BUTTON_HEIGHT + IMAGE_BUTTON_PADDING
+        )
         self.setCheckable(True)
         self.clicked.connect(self.action_click)
 
