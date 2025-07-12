@@ -115,7 +115,6 @@ class MainWindow(QMainWindow):
 
 
     def sig_add_card_to_deck(self, result, card):
-        print(f"Adding card {card.coords}: {result}")
         """
             1. Get last card coords
             2. Create new Card with last card coords
@@ -123,18 +122,21 @@ class MainWindow(QMainWindow):
             4. Add card to list
             5. Add new CardButton to layout
         """
-        row, col = self.deck_cards[-1].coords
-        if col == GRID_COLUMN_LIMIT:
-            row += 1
-            col = 0
+        if len(self.deck_cards) == 0:
+            row, col = (0, 0)
         else:
+            row, col = self.deck_cards[-1].coords
             col += 1
+            if col == GRID_COLUMN_LIMIT:
+                row += 1
+                col = 0
 
         deck_card = Card(card.path, row, col)
         self.deck_cards.append(deck_card)
         deck_card_button = CardGridButton(deck_card)
         deck_card_button.clicked.connect(lambda r: self.sig_remove_card_from_deck(r, card))
-        self.deck_scroll_area.card_grid_layout.addWidget(deck_card_button)
+        print(f"Adding card to {deck_card.coords}: {result}")
+        self.deck_scroll_area.card_grid_layout.addWidget(deck_card_button, deck_card.row, deck_card.col)
 
     def sig_remove_card_from_deck(self, result, card):
         print(f"Removing card {card.coords}: {result}")
@@ -147,6 +149,10 @@ class MainWindow(QMainWindow):
             if card_widget:
                 deck_grid.removeWidget(card_widget)
                 card_widget.deleteLater()
+
+        # Cleanup
+        self.deck_scroll_area.card_grid.adjustSize()
+        self.deck_cards.clear()
 
     def get_test_cards(self, number_of_cards):
         cards = []
